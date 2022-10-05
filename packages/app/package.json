@@ -1,0 +1,11 @@
+{
+    "name": "heap-reporter",
+    "version": "1.0.0",
+    "main": "dist/heap-reporter.js",
+    "private": true,
+    "files": [
+        "dist"
+    ],
+    "dependencies": {},
+    "devDependencies": {}
+}
