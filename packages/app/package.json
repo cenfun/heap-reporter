@@ -6,6 +6,8 @@
     "files": [
         "dist"
     ],
-    "dependencies": {},
+    "dependencies": {
+        "heap-reporter-worker": ""
+    },
     "devDependencies": {}
 }

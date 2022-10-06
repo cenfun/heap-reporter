@@ -10,7 +10,15 @@ module.exports = {
 
         after: (item, Util) => {
 
-            if (item.production) {
+            if (item.name === 'worker') {
+                //trigger build app too
+                const indexJs = path.resolve(__dirname, '../packages/app/src/index.js');
+                const content = Util.readFileContentSync(indexJs);
+                Util.writeFileContentSync(indexJs, content);
+                return 0;
+            }
+
+            if (item.name === 'app' && item.production) {
                 const filename = `${item.fullName}.js`;
                 //copy dist file to lib
                 const fromJs = path.resolve(item.buildPath, filename);

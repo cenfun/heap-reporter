@@ -28,7 +28,7 @@
             href="https://github.com/cenfun/heap-reporter"
             target="_blank"
             class="vui-icon vui-icon-github"
-            tooltip="Heap Report"
+            tooltip="Heap Reporter"
           />
         </div>
       </VuiFlex>
@@ -50,7 +50,7 @@
       </VuiFlex>
     </div>
     <div class="vui-body vui-flex-auto">
-      <Grid @show-codes="showCodes" />
+      <Grid />
       <div
         v-if="!state.heapSnapshots"
         class="vui-no-report-data"
@@ -105,7 +105,7 @@ import {
 
 import decompress from 'lz-utils/lib/decompress.js';
 import Grid from './grid.vue';
-
+import workerDataUrl from '../../worker/dist/heap-reporter-worker.js?url';
 
 const {
     //VuiSwitch,
@@ -116,6 +116,7 @@ const state = shallowReactive({
     name: 'Heap Report',
     heapSnapshots: null,
     group: false,
+    gridRows: null,
     keywords: '',
     flyoverVisible: false,
     currentRow: null,
@@ -141,29 +142,14 @@ const onFlyoverEnd = (v) => {
     }
 };
 
-const waitFlyoverEnd = () => {
-    return new Promise((resolve) => {
-        state.flyoverResolve = resolve;
-    });
+const onFinish = (data) => {
+    console.log(data);
+
+    state.gridRows = data;
 };
 
-let currentIndex;
-const showCodes = async (currentRow) => {
-    //console.log(currentRow);
-
-    if (currentIndex === currentRow.tg_index) {
-        return;
-    }
-    currentIndex = currentRow.tg_index;
-
-    if (!state.flyoverVisible) {
-        state.flyoverVisible = true;
-        await waitFlyoverEnd();
-    }
-
-    state.currentRow = currentRow;
-    state.currentFile = currentRow.name;
-
+const onProgress = (data) => {
+    console.log('onProgress', data);
 };
 
 const initHeapSnapshots = () => {
@@ -173,9 +159,23 @@ const initHeapSnapshots = () => {
         return;
     }
 
-    console.log(heapSnapshots);
-
-    state.currentRow = null;
+    //console.log(heapSnapshots);
+    const worker = new Worker(new URL(workerDataUrl));
+    worker.onmessage = function(e) {
+        const { type, data } = e.data;
+        if (type === 'error') {
+            console.error(data);
+            return;
+        }
+        if (type === 'finish') {
+            onFinish(data);
+            return;
+        }
+        if (type === 'progress') {
+            onProgress(data);
+        }
+    };
+    worker.postMessage(heapSnapshots);
 
 };
 

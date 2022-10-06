@@ -7,7 +7,7 @@ import { inject, watch } from 'vue';
 import { BF } from './util/util.js';
 
 const state = inject('state');
-const emit = defineEmits(['showCodes']);
+const emit = defineEmits(['showFlyover']);
 
 const showFlyover = (rowData, force) => {
 
@@ -19,7 +19,7 @@ const showFlyover = (rowData, force) => {
         return;
     }
 
-    emit('showCodes', rowData);
+    emit('showFlyover', rowData);
 
 };
 
@@ -194,12 +194,6 @@ const createGrid = () => {
 
 };
 
-const getGridRows = () => {
-
-    return [];
-
-};
-
 const getGridColumns = () => {
     const columns = [{
         id: 'name',
@@ -207,28 +201,12 @@ const getGridColumns = () => {
         width: 500,
         maxWidth: 2048
     }, {
-        id: 'codes',
-        name: 'Codes',
-        align: 'center',
-        formatter: 'codes',
-        width: 55
+        id: 'id',
+        name: 'ID'
     }, {
-        id: 'percent',
-        name: 'Percent',
-        formatter: 'percent',
-        sortable: false,
-        align: 'right'
-    }, {
-        id: 'percent',
-        name: '',
-        sortable: false,
-        formatter: 'percentBar',
-        width: 112
-    }, {
-        id: 'size',
+        id: 'self_size',
         name: 'Size',
-        align: 'right',
-        formatter: 'size'
+        align: 'right'
     }];
 
     return columns;
@@ -245,7 +223,7 @@ const renderGrid = () => {
 
     const gridData = {
         columns: getGridColumns(),
-        rows: getGridRows()
+        rows: state.gridRows
     };
 
     console.log('gridData', gridData);
