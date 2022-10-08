@@ -24,6 +24,8 @@
     "lz-utils": "^1.0.5"
   },
   "devDependencies": {
+    "chrome-devtools-frontend": "^1.0.1040857",
+    "esbuild": "^0.15.10",
     "eslint": "^8.24.0",
     "eslint-config-plus": "^1.0.3",
     "eslint-plugin-html": "^7.1.0",

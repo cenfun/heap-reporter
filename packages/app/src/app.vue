@@ -105,7 +105,11 @@ import {
 
 import decompress from 'lz-utils/lib/decompress.js';
 import Grid from './grid.vue';
-import workerDataUrl from '../../worker/dist/heap-reporter-worker.js?url';
+//import workerDataUrl from '../../worker/dist/heap-reporter-worker.js?url';
+//const workerUrl = new URL(workerDataUrl);
+
+//debug
+const workerUrl = 'packages/worker/dist/heap-reporter-worker.js';
 
 const {
     //VuiSwitch,
@@ -160,7 +164,7 @@ const initHeapSnapshots = () => {
     }
 
     //console.log(heapSnapshots);
-    const worker = new Worker(new URL(workerDataUrl));
+    const worker = new Worker(workerUrl);
     worker.onmessage = function(e) {
         const { type, data } = e.data;
         if (type === 'error') {
@@ -173,8 +177,12 @@ const initHeapSnapshots = () => {
         }
         if (type === 'progress') {
             onProgress(data);
+            return;
         }
+
+        console.log(e.data);
     };
+
     worker.postMessage(heapSnapshots);
 
 };
