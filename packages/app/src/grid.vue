@@ -204,7 +204,7 @@ const getGridColumns = () => {
         id: 'id',
         name: 'ID'
     }, {
-        id: 'self_size',
+        id: 'selfSize',
         name: 'Size',
         align: 'right'
     }];

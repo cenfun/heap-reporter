@@ -24,18 +24,27 @@ const onProgress = (data) => {
     });
 };
 
-// const parseNodes = (nodes, node_count, node_fields) => {
-//     const parsedNodes = [];
-//     const fieldCount = node_fields.length;
-//     for (let i = 0; i < node_count; i += fieldCount) {
-//         const node = {};
-//         node_fields.forEach((k, j) => {
-//             node[k] = nodes[i + j];
-//         });
-//         parsedNodes.push(node);
-//     }
-//     return parsedNodes;
-// };
+const parseNodes = (hs, node_count, node_fields) => {
+    const parsedNodes = [];
+    const fieldCount = node_fields.length;
+    const nodeCount = node_count / fieldCount;
+    for (let i = 0; i < nodeCount; i++) {
+        const node = hs.createNode(i);
+        parsedNodes.push(node.serialize());
+    }
+    return parsedNodes;
+};
+
+const parseEdges = (hs, edge_count, edge_fields) => {
+    const parsedEdges = [];
+    const fieldCount = edge_fields.length;
+    const edgeCount = edge_count / fieldCount;
+    for (let i = 0; i < edgeCount; i++) {
+        const edge = hs.createEdge(i);
+        parsedEdges.push(edge.serialize());
+    }
+    return parsedEdges;
+};
 
 // const linkNodeEdges = (from_node, edgeIndex, edges, edge_fields, edge_types, strings) => {
 
@@ -133,45 +142,46 @@ const parseItem = (name, data) => {
     const progress = new HeapSnapshotProgress();
     const hs = new JSHeapSnapshot(data, progress);
 
-    console.log(hs);
+    //console.log(hs);
     console.log(hs.getStatistics());
 
-    //const nodes = hs.createNode();
-    console.log('createEdgesProvider', hs.createEdgesProvider(1));
 
+    const {
+        //edges,
+        //locations,
+        //nodes,
+        //samples,
+        snapshot
+        // strings
+        //trace_function_infos,
+        //trace_tree
+    } = data;
 
-    // const {
-    //     edges,
-    //     //locations,
-    //     nodes,
-    //     //samples,
-    //     snapshot,
-    //     strings
-    //     //trace_function_infos,
-    //     //trace_tree
-    // } = data;
+    const {
+        edge_count,
+        meta,
+        node_count
+        //trace_function_count
+    } = snapshot;
 
-    // const {
-    //     //edge_count,
-    //     meta,
-    //     node_count
-    //     //trace_function_count
-    // } = snapshot;
+    const {
+        edge_fields,
+        //edge_types,
+        //location_fields,
+        node_fields
+        //node_types
+        //sample_fields,
+        //trace_function_info_fields,
+        //trace_node_fields
+    } = meta;
 
-    // const {
-    //     edge_fields,
-    //     edge_types,
-    //     //location_fields,
-    //     node_fields,
-    //     node_types
-    //     //sample_fields,
-    //     //trace_function_info_fields,
-    //     //trace_node_fields
-    // } = meta;
+    //console.log('meta', meta);
 
-    // console.log('meta', meta);
+    const parsedEdges = parseEdges(hs, edge_count, edge_fields);
 
-    // const parsedNodes = parseNodes(nodes, node_count, node_fields);
+    const parsedNodes = parseNodes(hs, node_count, node_fields);
+
+    //console.log(parsedNodes, parsedEdges);
 
     // let size = 0;
     // let edgeIndex = 0;
@@ -193,7 +203,15 @@ const parseItem = (name, data) => {
         // collapsed: true
     };
 
-    // results.subs = groupByType(parsedNodes, node_types, node_fields, strings);
+    results.subs = [{
+        name: 'Nodes',
+        collapsed: true,
+        subs: parsedNodes
+    }, {
+        name: 'Edges',
+        collapsed: true,
+        subs: parsedEdges
+    }];
 
     return results;
 };
